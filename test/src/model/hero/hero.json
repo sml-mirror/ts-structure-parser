@@ -248,6 +248,15 @@
                 {
                     "name": "ClassDecoratorWithParam",
                     "arguments": ["HeroClass"]
+                },
+                {
+                "arguments": [
+                {
+                    "samenameintitle": 1,
+                    "secondItem": "samenameintitle/22"
+                }
+                ],
+                "name": "FieldDecoratorWithAnyParam"
                 }
             ],
             "annotations": [],

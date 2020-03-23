@@ -32,6 +32,10 @@ export class HeroDetail {
 
 @ClassDecorator()
 @ClassDecoratorWithParam("HeroClass")
+@FieldDecoratorWithAnyParam({
+    samenameintitle: 1,
+    secondItem: "samenameintitle/22"
+})
 export class Hero {
 
     @FieldDecoratorWithParam("int, primary key")
