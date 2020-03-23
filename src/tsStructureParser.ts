@@ -68,41 +68,45 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
             const isArrow = x.kind === ts.SyntaxKind.ArrowFunction;
 
             const functionDeclaration = isArrow ? x as ts.ArrowFunction : x as ts.FunctionDeclaration;
+            const parentVariable = functionDeclaration.parent as ts.VariableDeclaration;
+            const name = isArrow
+                ?  parentVariable.name && parentVariable.name.getText()
+                :  functionDeclaration.name.text;
+
             let isAsync = false;
             let isExport = false;
             let params: {name: string, type: string, mandatory: boolean}[] = [];
+            if (name) {
+                const modifierContainer = isArrow
+                    ? (functionDeclaration.parent as ts.VariableDeclaration).initializer
+                    : functionDeclaration;
+                if (modifierContainer && modifierContainer.modifiers) {
+                    modifierContainer.modifiers.forEach(modi => {
+                        if (modi.kind === ts.SyntaxKind.AsyncKeyword) {
+                            isAsync = true;
+                        }
+                        if (modi.kind === ts.SyntaxKind.ExportKeyword && !isArrow) {
+                            isExport = true;
+                        }
+                    });
+                }
 
-            const modifierContainer = isArrow
-                ? (functionDeclaration.parent as ts.VariableDeclaration).initializer
-                : functionDeclaration;
-            if (modifierContainer.modifiers) {
-                modifierContainer.modifiers.forEach(modi => {
-                    if (modi.kind === ts.SyntaxKind.AsyncKeyword) {
-                        isAsync = true;
-                    }
-                    if (modi.kind === ts.SyntaxKind.ExportKeyword && !isArrow) {
-                        isExport = true;
-                    }
+                functionDeclaration.parameters.forEach(param => {
+                    params.push({
+                        name: param.name.getText(),
+                        type: (param.type && param.type.getText()) || "any",
+                        mandatory: !param.questionToken
+                    });
+
+                });
+                module.functions.push({
+                    isArrow,
+                    isExport,
+                    isAsync,
+                    name,
+                    params,
                 });
             }
-
-            functionDeclaration.parameters.forEach(param => {
-                params.push({
-                    name: param.name.getText(),
-                    type: param.type.getText() || "any",
-                    mandatory: !param.questionToken
-                });
-
-            });
-            module.functions.push({
-                isArrow,
-                isExport,
-                isAsync,
-                name: isArrow
-                    ? (functionDeclaration.parent as ts.VariableDeclaration).name.getText()
-                    :  functionDeclaration.name.text,
-                params,
-            });
         }
 
 

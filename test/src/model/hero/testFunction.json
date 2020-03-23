@@ -70,5 +70,18 @@
     "isAsync": false,
     "name": "arrowNotExportFunctionWithMixReturnValue",
     "params": []
-  }
+  },
+  {
+     "isArrow": true,
+     "isAsync": true,
+      "isExport": false,
+      "name": "analogIdsTransformer",
+      "params": [
+        {
+          "mandatory": true,
+          "name": "bol",
+          "type": "boolean"
+        }
+      ]
+    }
 ]

@@ -31,6 +31,13 @@ export const arrowAsyncFunctionLikeVariable = async (params1: string): Promise<n
 
 const arrowNotExportFunctionWithMixReturnValue = (): Promise<void | null | string> => { return null; };
 
+export const analogIdsTransformer = async (bol: boolean) => {
+    if (bol) {
+       return [1, 2, 3, 4, 5, 6, 7, 8].map(item => console.log(item));
+    }
+    return [];
+};
+
 export class TestClassWithFunc {
     static func = () => {
         console.log(1);
