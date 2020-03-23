@@ -38,3 +38,9 @@ export function FieldDecoratorWithObjectParam(func: Object): any {
         var f;
     };
 }
+
+export function FieldDecoratorWithAnyParam(anyParams: any): any {
+    return function() {
+        var f;
+    };
+}

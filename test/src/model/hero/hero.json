@@ -44,6 +44,22 @@
                         {
                             "name": "FieldDecorator",
                             "arguments": []
+                        },
+                        {
+                            "arguments": [
+                                {
+                                    "paramDos": false,
+                                    "paramTres": {
+                                        "paramDos": "quatro",
+                                        "paramUno": 15,
+                                        "paramsFive": "TestClassWithFunc.func",
+                                        "paramsFour": "testFunction",
+                                        "paramsTre": false
+                                    },
+                                    "paramUno": "123"
+                                }
+                            ],
+                            "name": "FieldDecoratorWithAnyParam"
                         }
                     ]
                 }
@@ -269,7 +285,8 @@
                 "FieldDecorator",
                 "FieldDecoratorWithParam",
                 "FieldDecoratorWith2Params",
-                "FieldDecoratorWithFuncParam"
+                "FieldDecoratorWithFuncParam",
+                "FieldDecoratorWithAnyParam"
             ],
             "isNodeModule": false
         },
@@ -283,7 +300,8 @@
                 "testFunction"
             ],
             "clauses":  [
-                "testFunction"
+                "testFunction",
+                "TestClassWithFunc"
             ],
             "isNodeModule": false
         },

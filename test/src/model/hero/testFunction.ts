@@ -32,7 +32,7 @@ export const arrowAsyncFunctionLikeVariable = async (params1: string): Promise<n
 const arrowNotExportFunctionWithMixReturnValue = (): Promise<void | null | string> => { return null; };
 
 export class TestClassWithFunc {
-    func = () => {
+    static func = () => {
 
     };
 
