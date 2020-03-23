@@ -36,6 +36,10 @@ export class HeroDetail {
     samenameintitle: 1,
     secondItem: "samenameintitle/22"
 })
+@FieldDecoratorWithAnyParam({
+    nullable: true,
+    secondItem: null
+})
 export class Hero {
 
     @FieldDecoratorWithParam("int, primary key")

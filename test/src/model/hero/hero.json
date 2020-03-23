@@ -257,6 +257,14 @@
                 }
                 ],
                 "name": "FieldDecoratorWithAnyParam"
+                },{
+                    "arguments": [
+                        {
+                            "nullable": true,
+                            "secondItem": "null"
+                        }
+                    ],
+                    "name": "FieldDecoratorWithAnyParam"
                 }
             ],
             "annotations": [],
