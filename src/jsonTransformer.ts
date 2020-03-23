@@ -35,7 +35,7 @@ export class JSONTransformer {
         }
 
         // make all value like function in branches
-        regExp = /: ?[a-zA-Z]\w+(\.\w+)?/g;
+        regExp = /:(\s)*?[a-zA-Z]\w+(\.\w+)?/g;
         m = jsonString.match(regExp);
         if (m) {
             m = m.map(item => {
