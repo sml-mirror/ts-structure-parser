@@ -22,4 +22,16 @@ describe("E2E Tests", () => {
           done();
       });
 
+      it("Function", (done) => {
+        let filePath: string = "./test/src/model/hero/testFunction.ts";
+        let expectedFunc: string = "./test/src/model/hero/testFunction.json";
+
+        let decls = fs.readFileSync(filePath).toString();
+        let parsedStructure: Module = parseStruct(decls, {}, filePath);  
+        const functions = parsedStructure.functions;
+        let expectedStruct: any = JSON.parse(fs.readFileSync(expectedFunc, "utf8"));
+        expect(functions).be.deep.equal(expectedStruct);
+        done();
+      });
+
 });

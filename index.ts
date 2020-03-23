@@ -3,6 +3,7 @@ import tsStructureParser = require("./src/tsStructureParser");
 
 export interface Module {
     classes: ClassModel[];
+    functions: FunctionDeclaration[];
     imports: { [name: string]: Module};
     _imports: ImportNode[];
     aliases: AliasNode[];
@@ -10,6 +11,29 @@ export interface Module {
     name: string;
 }
 
+export interface FunctionDeclaration {
+    name: string;
+    isAsync: boolean; 
+    isArrow: boolean;
+    isExport: boolean;
+    // returnType?: ReturnTypeDeclaration;
+    params?: {
+        name: string,
+        type: string,
+        mandatory: boolean;
+    }[];
+}
+
+
+export interface ReturnTypeDeclaration {
+    isPromise?: boolean;
+    isArray?: boolean;
+    isUnion?: boolean;
+    isLiteral?: boolean;
+    value?: any;
+    type: string | ReturnTypeDeclaration[] | undefined;
+
+}
 export interface AliasNode {
     name: string;
     type: TypeModel;

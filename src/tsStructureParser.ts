@@ -13,7 +13,7 @@ import {Annotation} from "../index";
 import {Decorator} from "../index";
 import {Constraint} from "../index";
 import {FieldModel} from "../index";
-import {Module} from "../index";
+import {Module, FunctionDeclaration} from "../index";
 import {MethodModel} from "../index";
 import {ParameterModel} from "../index";
 import {UnionType} from "../index";
@@ -28,11 +28,10 @@ var fld = tsm.Matching.field();
 
 export function parseStruct(content: string, modules: {[path: string]: Module}, mpth: string): Module {
     var mod = parse(content);
-    var module: Module = {classes: [], aliases: [], enumDeclarations: [], imports: {}, _imports: [], name: mpth};
+    var module: Module = {functions: [], classes: [], aliases: [], enumDeclarations: [], imports: {}, _imports: [], name: mpth};
     modules[mpth] = module;
     var currentModule: string = null;
     tsm.Matching.visit(mod, x => {
-
         if ( x.kind === ts.SyntaxKind.ImportDeclaration ) {
             var impDec = <ts.ImportDeclaration>x;
             var localMod = parse(x.getText());
@@ -65,6 +64,48 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
             });
             module._imports.push(localImport);
         }
+        if (x.kind === ts.SyntaxKind.FunctionDeclaration || x.kind ===  ts.SyntaxKind.ArrowFunction) {
+            const isArrow = x.kind === ts.SyntaxKind.ArrowFunction;
+
+            const functionDeclaration = isArrow ? x as ts.ArrowFunction : x as ts.FunctionDeclaration;
+            let isAsync = false;
+            let isExport = false;
+            let params: {name: string, type: string, mandatory: boolean}[] =[];
+
+            const modifierContainer = isArrow
+                ? (functionDeclaration.parent as ts.VariableDeclaration).initializer
+                : functionDeclaration;
+            if (modifierContainer.modifiers) {
+                modifierContainer.modifiers.forEach(modi => {
+                    if (modi.kind === ts.SyntaxKind.AsyncKeyword) {
+                        isAsync = true;
+                    }
+                    if (modi.kind === ts.SyntaxKind.ExportKeyword && !isArrow) {
+                        isExport = true;
+                    }
+                });
+            }
+
+            functionDeclaration.parameters.forEach(param => {
+                params.push({
+                    name: param.name.getText(),
+                    type: param.type.getText() || 'any',
+                    mandatory: !param.questionToken
+                })
+
+            });
+            module.functions.push({
+                isArrow,
+                isExport,
+                isAsync,
+                name: isArrow 
+                    ? (functionDeclaration.parent as ts.VariableDeclaration).name.getText()
+                    :  functionDeclaration.name.text,
+                params,
+            });  
+        }
+
+
         if (x.kind === ts.SyntaxKind.ModuleDeclaration) {
             var cmod = <ts.ModuleDeclaration>x;
             currentModule = cmod.name.text;

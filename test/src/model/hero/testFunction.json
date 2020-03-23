@@ -1,0 +1,74 @@
+[
+  {
+    "isArrow": false,
+    "isExport": true,
+    "isAsync": false,
+    "name": "testFunction",
+    "params": []
+  },
+  {
+    "isArrow": false,
+    "isExport": true,
+    "isAsync": false,
+    "name": "testFunctionWithNumberSingleType",
+    "params": [ { "name": "params1", "type": "Promise<number>[]", "mandatory": true } ]
+  },
+  {
+    "isArrow": false,
+    "isExport": true,
+    "isAsync": true,
+    "name": "testAsyncFunction",
+    "params": [ { "name": "params1", "type": "string", "mandatory": true }, { "name": "params2", "type": "number", "mandatory": false } ]
+  },
+  {
+    "isArrow": false,
+    "isExport": true,
+    "isAsync": true,
+    "name": "testAsyncFunctionWithReturnValue",
+    "params": [ { "name": "params1", "type": "string", "mandatory": true },   { "name": "params2", "type": "number", "mandatory": false }]
+  },
+  {
+    "isArrow": false,
+    "isExport": true,
+    "isAsync": true,
+    "name": "testAsyncFunctionWithReturnMixValue",
+    "params": [
+        { "name": "params1", "type": "string", "mandatory": true },
+        { "name": "params2", "type": "number", "mandatory": false } ]
+  },
+  {
+    "isArrow": false,
+    "isExport": false,
+    "isAsync": false,
+    "name": "notExportNotAsyncFunction",
+    "params": []
+  },
+  {
+    "isArrow": true,
+    "isExport": false,
+    "isAsync": false,
+    "name": "arrowFunctionLikeVariable",
+    "params": []
+  },
+  {
+    "isArrow": true,
+    "isExport": false,
+    "isAsync": false,
+    "name": "arrowNotExportFunction",
+    "params": []
+  },
+  {
+    "isArrow": true,
+    "isExport": false,
+    "isAsync": true,
+    "name": "arrowAsyncFunctionLikeVariable",
+    "params":  [ { "name": "params1", "type": "string", "mandatory": true } ]
+  },
+  {
+    "isArrow": true,
+    "isExport": false,
+    "isAsync": false,
+    "name": "arrowNotExportFunctionWithMixReturnValue",
+    "params": []
+  }
+]

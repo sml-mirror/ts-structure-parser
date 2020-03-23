@@ -299,6 +299,7 @@
     ],
     "aliases": [],
     "enumDeclarations": [],
+    "functions": [],
     "imports": {},
     "name": "./test/src/model/hero/hero.ts"
 }
