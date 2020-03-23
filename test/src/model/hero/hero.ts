@@ -1,5 +1,10 @@
 import {ClassDecorator, ClassDecoratorWithParam}  from "../decorator/decorator";
-import {FieldDecorator, FieldDecoratorWithParam, FieldDecoratorWith2Params, FieldDecoratorWithFuncParam, FieldDecoratorWithAnyParam} from "../decorator/decorator";
+import {
+    FieldDecorator,
+    FieldDecoratorWithParam,
+    FieldDecoratorWith2Params,
+    FieldDecoratorWithFuncParam,
+    FieldDecoratorWithAnyParam} from "../decorator/decorator";
 import {testFunction, TestClassWithFunc}  from "./testFunction";
 import { } from "grunt";
 
@@ -11,13 +16,13 @@ export class HeroDetail {
 
     @FieldDecorator()
     @FieldDecoratorWithAnyParam({
-        paramUno: '123',
+        paramUno: "123",
         paramDos: false,
         paramTres:
             {
                 paramUno: 15,
-                paramDos: 'quatro',
-                'paramsTre': false,
+                paramDos: "quatro",
+                "paramsTre": false,
                 paramsFour: testFunction,
                 paramsFive: TestClassWithFunc.func
             }

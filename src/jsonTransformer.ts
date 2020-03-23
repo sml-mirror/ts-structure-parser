@@ -22,7 +22,7 @@ export class JSONTransformer {
         let m = jsonString.match(regExp);
         if (m) {
             m = m.map(item => {
-                return item.trim().replace(':', '');
+                return item.trim().replace(":", "");
             });
             m = JSONTransformer.unique(m);
             m.forEach(match => {

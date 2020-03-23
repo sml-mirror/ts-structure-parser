@@ -70,7 +70,7 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
             const functionDeclaration = isArrow ? x as ts.ArrowFunction : x as ts.FunctionDeclaration;
             let isAsync = false;
             let isExport = false;
-            let params: {name: string, type: string, mandatory: boolean}[] =[];
+            let params: {name: string, type: string, mandatory: boolean}[] = [];
 
             const modifierContainer = isArrow
                 ? (functionDeclaration.parent as ts.VariableDeclaration).initializer
@@ -89,20 +89,20 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
             functionDeclaration.parameters.forEach(param => {
                 params.push({
                     name: param.name.getText(),
-                    type: param.type.getText() || 'any',
+                    type: param.type.getText() || "any",
                     mandatory: !param.questionToken
-                })
+                });
 
             });
             module.functions.push({
                 isArrow,
                 isExport,
                 isAsync,
-                name: isArrow 
+                name: isArrow
                     ? (functionDeclaration.parent as ts.VariableDeclaration).name.getText()
                     :  functionDeclaration.name.text,
                 params,
-            });  
+            });
         }
 
 
