@@ -22,13 +22,13 @@ export class JSONTransformer {
         let m = jsonString.match(regExp);
         if (m) {
             m = m.map(item => {
-                return item.trim().replace(":", "");
+                return item.trim();
             });
             m = JSONTransformer.unique(m);
             m.forEach(match => {
                 if (!(match.match(/ ?(true|false)[ ,}]?/))) {
                     let reg = new RegExp(match, "g");
-                    let replaceWord = "\"" + match.substring(0 , match.length) + "\"" ;
+                    let replaceWord = `"${match.substring(0, match.length - 1).trim()}":`;
                     jsonString = jsonString.replace(reg, replaceWord);
                 }
             });
