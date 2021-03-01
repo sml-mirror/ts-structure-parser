@@ -342,6 +342,11 @@ function buildDecorator(e: ts.Expression): Decorator {
             a.arguments.push(parseArg(x));
         });
         return a;
+    } else if (e.kind === ts.SyntaxKind.Identifier) {
+      return {
+        name: e.escapedText,
+        arguments: []
+      };
     } else {
          throw new Error("Only call expressions may be annotations");
     }
