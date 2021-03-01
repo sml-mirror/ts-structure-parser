@@ -344,7 +344,7 @@ function buildDecorator(e: ts.Expression): Decorator {
         return a;
     } else if (e.kind === ts.SyntaxKind.Identifier) {
       return {
-        name: e.escapedText,
+        name: String((e as any).escapedText),
         arguments: []
       };
     } else {
