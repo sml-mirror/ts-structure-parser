@@ -1,4 +1,4 @@
-name: check PR to master
+name: check PR to main branch
 
 on:
   pull_request:
