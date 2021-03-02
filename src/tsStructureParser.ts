@@ -155,17 +155,17 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
                     let value: number| string;
                     if (member.initializer) {
                       if (member.initializer.kind === ts.SyntaxKind.NumericLiteral) {
-                        value = Number((member.initializer as any)?.["text"]);
+                        value = Number((member.initializer as any)?.text);
                       }
                       if (
                         member.initializer.kind === ts.SyntaxKind.StringLiteral ||
                         member.initializer.kind === ts.SyntaxKind.JsxText
                       ) {
-                        value = String((member.initializer as any)?.["text"]);
+                        value = String((member.initializer as any)?.text);
                       }
                     }
                     members.push({
-                      name: String((member.name as any)?.["text"]),
+                      name: String((member.name as any)?.text),
                       value,
                     });
                 });
