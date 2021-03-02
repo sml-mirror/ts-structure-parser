@@ -155,13 +155,13 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
                     let value: number | string | undefined;
                     if (member.initializer) {
                       if (member.initializer.kind === ts.SyntaxKind.NumericLiteral) {
-                        value = parseInt(member.initializer && (member.initializer as any).text);
+                        value = parseInt((member.initializer as any).text);
                       }
                       if (
                         member.initializer.kind === ts.SyntaxKind.StringLiteral ||
                         member.initializer.kind === ts.SyntaxKind.JsxText
                       ) {
-                        value = String(member.initializer && (member.initializer as any).text);
+                        value = String((member.initializer as any).text);
                       }
                     }
                     members.push({
