@@ -152,7 +152,7 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
             var members: EnumMemberDeclaration[] = [];
             if (e.members) {
                 e.members.forEach(member => {
-                    let value: number| string;
+                    let value: number | string | undefined;
                     if (member.initializer) {
                       if (member.initializer.kind === ts.SyntaxKind.NumericLiteral) {
                         value = Number((member.initializer as any)?.text);
