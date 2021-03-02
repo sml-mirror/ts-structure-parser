@@ -45,9 +45,14 @@ export interface ImportNode {
     isNodeModule: boolean;
 }
 
+export class EnumMemberDeclaration {
+  name: string;
+  value?: number | string;
+}
+
 export class EnumDeclaration {
     name: string;
-    members: string[];
+    members: EnumMemberDeclaration[];
 }
 
 export enum TypeKind {

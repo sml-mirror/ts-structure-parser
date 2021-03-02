@@ -1,3 +1,4 @@
+import {EnumMemberDeclaration} from './../index';
 /**
  * Created by kor on 08/05/15.
  */
@@ -148,10 +149,25 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
 
         if (x.kind === ts.SyntaxKind.EnumDeclaration) {
             var e = <ts.EnumDeclaration>x;
-            var members: string[] = [];
+            var members: EnumMemberDeclaration[] = [];
             if (e.members) {
-                e.members.forEach(y => {
-                    members.push(y["name"]["text"]);
+                e.members.forEach(member => {
+                    let value: number| string;
+                    if (member.initializer) {
+                      if (member.initializer.kind === ts.SyntaxKind.NumericLiteral) {
+                        value = Number(member.initializer?.["text"]);
+                      }
+                      if (
+                        member.initializer.kind === ts.SyntaxKind.StringLiteral ||
+                        member.initializer.kind === ts.SyntaxKind.JsxText
+                      ) {
+                        value = String(member.initializer?.["text"]);
+                      }
+                    }
+                    members.push({
+                      name: String(member.name?.["text"]),
+                      value,
+                    });
                 });
             }
             if (e.name) {
