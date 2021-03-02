@@ -1,4 +1,3 @@
-import {EnumMemberDeclaration} from './../index';
 /**
  * Created by kor on 08/05/15.
  */
@@ -20,6 +19,7 @@ import {ParameterModel} from "../index";
 import {UnionType} from "../index";
 import {BasicType} from "../index";
 import {classDecl} from "../index";
+import {EnumMemberDeclaration} from "./../index";
 import { JSONTransformer } from "./jsonTransformer";
 
 function parse(content: string) {
@@ -155,17 +155,17 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
                     let value: number | string | undefined;
                     if (member.initializer) {
                       if (member.initializer.kind === ts.SyntaxKind.NumericLiteral) {
-                        value = Number((member.initializer as any)?.text);
+                        value = parseInt(member.initializer && (member.initializer as any).text);
                       }
                       if (
                         member.initializer.kind === ts.SyntaxKind.StringLiteral ||
                         member.initializer.kind === ts.SyntaxKind.JsxText
                       ) {
-                        value = String((member.initializer as any)?.text);
+                        value = String(member.initializer && (member.initializer as any).text);
                       }
                     }
                     members.push({
-                      name: String((member.name as any)?.text),
+                      name: String((member.name as any).text),
                       value,
                     });
                 });
