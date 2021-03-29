@@ -39,7 +39,7 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
                     const isExport = !!((x.parent.parent.modifiers || []) as any[]).find(mod => mod.kind === ts.SyntaxKind.ExportKeyword);
                     const params = [];
                     let isAsync = !!(c.modifiers || [] as any).find(m => m.kind === ts.SyntaxKind.AsyncKeyword);
-                    const name = (x as any).name.escapedText;
+                    const name = (x as ts.FunctionDeclaration).name.escapedText;
                     (c as any).parameters.forEach(param => {
                         params.push({
                             name: param.name.getText(),
