@@ -38,6 +38,26 @@ export const analogIdsTransformer = async (bol: boolean) => {
     return [];
 };
 
+export const funcWithFuncDescription = function () {
+    return true;
+};
+
+export const funcWithFuncDescriptionAndOneParam = function (param: number) {
+    return true;
+};
+
+const asyncFuncWithFuncDescription = async function () {
+    return true;
+};
+
+export const asyncFuncWithFuncDescriptionAndOneParam = async function (param?: any) {
+    return true;
+};
+
+export const notInJSON = true;
+
+export const notInJSON2 = "true";
+
 export class TestClassWithFunc {
     static func = () => {
         console.log(1);

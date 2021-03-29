@@ -33,6 +33,30 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
     modules[mpth] = module;
     var currentModule: string = null;
     tsm.Matching.visit(mod, x => {
+        if (x.kind === ts.SyntaxKind.VariableDeclaration) {
+            x.forEachChild(c => {
+                if (c.kind === ts.SyntaxKind.FunctionExpression) {
+                    const isExport = !!((x.parent.parent.modifiers || []) as any[]).find(mod => mod.kind === ts.SyntaxKind.ExportKeyword);
+                    const params = [];
+                    let isAsync = !!(c.modifiers || [] as any).find(m => m.kind === ts.SyntaxKind.AsyncKeyword);
+                    const name = (x as any).name.escapedText;
+                    (c as any).parameters.forEach(param => {
+                        params.push({
+                            name: param.name.getText(),
+                            type: (param.type && param.type.getText()) || "any",
+                            mandatory: !param.questionToken
+                        });
+                    });
+                    module.functions.push({
+                        isArrow: false,
+                        isExport,
+                        isAsync,
+                        name,
+                        params,
+                    });
+                }
+            });
+        }
         if ( x.kind === ts.SyntaxKind.ImportDeclaration ) {
             var impDec = <ts.ImportDeclaration>x;
             var localMod = parse(x.getText());

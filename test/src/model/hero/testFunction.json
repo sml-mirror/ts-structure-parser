@@ -83,5 +83,44 @@
           "type": "boolean"
         }
       ]
-    }
+    },{
+    "isArrow": false,
+    "isAsync": false,
+    "isExport": true,
+    "name": "funcWithFuncDescription",
+    "params": []
+  },
+  {
+    "isArrow": false,
+    "isAsync": false,
+    "isExport": true,
+    "name": "funcWithFuncDescriptionAndOneParam",
+    "params": [
+      {
+        "mandatory": true,
+        "name": "param",
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "isArrow": false,
+    "isAsync": true,
+    "isExport": false,
+    "name": "asyncFuncWithFuncDescription",
+    "params": []
+  },
+  {
+    "isArrow": false,
+    "isAsync": true,
+    "isExport": true,
+    "name": "asyncFuncWithFuncDescriptionAndOneParam",
+    "params": [
+      {
+        "mandatory": false,
+        "name": "param",
+        "type": "any"
+      }
+    ]
+  }
 ]
