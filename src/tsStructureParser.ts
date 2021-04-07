@@ -453,7 +453,7 @@ export function parseArg(n: ts.Expression): any {
     }
 
     if (n.kind === ts.SyntaxKind.NullKeyword) {
-        return n.getText();
+        return null;
     }
     return n.getText();
     //throw new Error("Unknown value in annotation");
