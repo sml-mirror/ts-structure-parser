@@ -497,6 +497,9 @@ export function buildType(t: ts.TypeNode, path: string): TypeModel {
     if (t.kind === ts.SyntaxKind.BooleanKeyword) {
         return basicType("boolean", null);
     }
+    if (t.kind === ts.SyntaxKind.NullKeyword) {
+        return basicType("null", null);
+    }
     if (t.kind === ts.SyntaxKind.AnyKeyword) {
         return basicType("any", null);
     }
