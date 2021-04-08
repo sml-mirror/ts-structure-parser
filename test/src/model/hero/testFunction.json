@@ -45,7 +45,7 @@
   },
   {
     "isArrow": true,
-    "isExport": false,
+    "isExport": true,
     "isAsync": false,
     "name": "arrowFunctionLikeVariable",
     "params": []
@@ -59,7 +59,7 @@
   },
   {
     "isArrow": true,
-    "isExport": false,
+    "isExport": true,
     "isAsync": true,
     "name": "arrowAsyncFunctionLikeVariable",
     "params":  [ { "name": "params1", "type": "string", "mandatory": true } ]
@@ -74,7 +74,7 @@
   {
      "isArrow": true,
      "isAsync": true,
-      "isExport": false,
+      "isExport": true,
       "name": "analogIdsTransformer",
       "params": [
         {
