@@ -102,7 +102,7 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
             let isExport = false;
             let params: {name: string, type: string, mandatory: boolean}[] = [];
             if (name) {
-                const modifierContainer = isArrow
+                let modifierContainer = isArrow
                     ? (functionDeclaration.parent as ts.VariableDeclaration).initializer
                     : functionDeclaration;
                 if (modifierContainer && modifierContainer.modifiers) {
@@ -114,6 +114,20 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
                             isExport = true;
                         }
                     });
+                }
+
+                if (isArrow && !isExport) {
+                  do {
+                    modifierContainer = modifierContainer.parent as ts.Expression;
+                  } while (modifierContainer && modifierContainer.kind !== ts.SyntaxKind.VariableStatement);
+
+                  if (modifierContainer && modifierContainer.modifiers) {
+                    modifierContainer.modifiers.forEach(modi => {
+                        if (modi.kind === ts.SyntaxKind.ExportKeyword) {
+                            isExport = true;
+                        }
+                    });
+                  }
                 }
 
                 functionDeclaration.parameters.forEach(param => {
