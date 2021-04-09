@@ -80,7 +80,7 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
                     if ( localPath[0] === "." ) {
                         var localP = fsUtil.resolve( fsUtil.dirname( mpth) + "/", localPath).split( process.cwd()).join(".");
                         localAbsPath = localP.split(pth.sep);
-                        localAbsPathString = localP.replace(new RegExp('^[\.\\' + pth.sep + ']+'), '');
+                        localAbsPathString = localP.replace(/^\W+/, '');
                     } else {
                         localAbsPath = localPath.split(pth.sep);
                         localAbsPathString = localPath;
