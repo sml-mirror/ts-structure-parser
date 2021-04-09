@@ -60,7 +60,7 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
         if ( x.kind === ts.SyntaxKind.ImportDeclaration ) {
             var impDec = <ts.ImportDeclaration>x;
             var localMod = parse(x.getText());
-            var localImport = { clauses: [] , absPathNode: [], absPathString: '', isNodeModule: false};
+            var localImport = { clauses: [] , absPathNode: [], absPathString: "", isNodeModule: false};
             var localNamedImports: string[];
             var localAbsPath: string[];
             var localAbsPathString: string;
@@ -80,7 +80,7 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
                     if ( localPath[0] === "." ) {
                         var localP = fsUtil.resolve( fsUtil.dirname( mpth) + "/", localPath).split( process.cwd()).join(".");
                         localAbsPath = localP.split(pth.sep);
-                        localAbsPathString = localP.replace(/^\W+/, '');
+                        localAbsPathString = localP;
                     } else {
                         localAbsPath = localPath.split(pth.sep);
                         localAbsPathString = localPath;
