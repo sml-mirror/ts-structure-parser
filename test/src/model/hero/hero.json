@@ -283,6 +283,7 @@
                 "decorator",
                 "decorator"
             ],
+            "absPathString": "test/src/model/decorator/decorator",
             "clauses": [
                 "ClassDecorator",
                 "ClassDecoratorWithParam"
@@ -298,6 +299,7 @@
                 "decorator",
                 "decorator"
             ],
+            "absPathString": "test/src/model/decorator/decorator",
             "clauses": [
                 "FieldDecorator",
                 "FieldDecoratorWithParam",
@@ -316,6 +318,7 @@
                 "hero",
                 "testFunction"
             ],
+            "absPathString": "test/src/model/hero/testFunction",
             "clauses":  [
                 "testFunction",
                 "TestClassWithFunc"
@@ -326,6 +329,7 @@
             "absPathNode": [
                 "grunt"
             ],
+            "absPathString": "grunt",
             "clauses": [
                 ""
             ],

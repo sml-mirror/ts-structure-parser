@@ -42,6 +42,7 @@ export interface AliasNode {
 export interface ImportNode {
     clauses: string[];
     absPathNode: string[];
+    absPathString: string;
     isNodeModule: boolean;
 }
 

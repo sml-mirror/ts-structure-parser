@@ -60,9 +60,10 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
         if ( x.kind === ts.SyntaxKind.ImportDeclaration ) {
             var impDec = <ts.ImportDeclaration>x;
             var localMod = parse(x.getText());
-            var localImport = { clauses: [] , absPathNode: [], isNodeModule: false};
+            var localImport = { clauses: [] , absPathNode: [], absPathString: '', isNodeModule: false};
             var localNamedImports: string[];
             var localAbsPath: string[];
+            var localAbsPathString: string;
             var localNodeModule: boolean = false;
             var pth = require("path");
             tsm.Matching.visit(localMod, y => {
@@ -79,11 +80,14 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
                     if ( localPath[0] === "." ) {
                         var localP = fsUtil.resolve( fsUtil.dirname( mpth) + "/", localPath).split( process.cwd()).join(".");
                         localAbsPath = localP.split(pth.sep);
+                        localAbsPathString = localP.replace(new RegExp('^[\.\\' + pth.sep + ']+'), '');
                     } else {
                         localAbsPath = localPath.split(pth.sep);
+                        localAbsPathString = localPath;
                         localNodeModule = true;
                     }
                     localImport.absPathNode = localAbsPath;
+                    localImport.absPathString = localAbsPathString;
                     localImport.isNodeModule = localNodeModule;
                 }
             });
