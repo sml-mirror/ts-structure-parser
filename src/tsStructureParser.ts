@@ -106,7 +106,7 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
             let isExport = false;
             let params: {name: string, type: string, mandatory: boolean}[] = [];
             if (name) {
-                const modifierContainer = isArrow
+                let modifierContainer = isArrow
                     ? (functionDeclaration.parent as ts.VariableDeclaration).initializer
                     : functionDeclaration;
                 if (modifierContainer && modifierContainer.modifiers) {
@@ -118,6 +118,20 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
                             isExport = true;
                         }
                     });
+                }
+
+                if (isArrow && !isExport) {
+                  do {
+                    modifierContainer = modifierContainer.parent as ts.Expression;
+                  } while (modifierContainer && modifierContainer.kind !== ts.SyntaxKind.VariableStatement);
+
+                  if (modifierContainer && modifierContainer.modifiers) {
+                    modifierContainer.modifiers.forEach(modi => {
+                        if (modi.kind === ts.SyntaxKind.ExportKeyword) {
+                            isExport = true;
+                        }
+                    });
+                  }
                 }
 
                 functionDeclaration.parameters.forEach(param => {
@@ -260,7 +274,7 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
                     if (!x.constraint) {
                         clazz.typeParameterConstraint.push(null);
                     } else {
-                        clazz.typeParameterConstraint.push(x.constraint["typeName"]["text"]);
+                        clazz.typeParameterConstraint.push(x.constraint["typeName"] ? x.constraint["typeName"]["text"] : null);
                     }
                 });
             }
@@ -457,7 +471,7 @@ export function parseArg(n: ts.Expression): any {
     }
 
     if (n.kind === ts.SyntaxKind.NullKeyword) {
-        return n.getText();
+        return null;
     }
     return n.getText();
     //throw new Error("Unknown value in annotation");
@@ -500,6 +514,9 @@ export function buildType(t: ts.TypeNode, path: string): TypeModel {
     }
     if (t.kind === ts.SyntaxKind.BooleanKeyword) {
         return basicType("boolean", null);
+    }
+    if (t.kind === ts.SyntaxKind.NullKeyword) {
+        return basicType("null", null);
     }
     if (t.kind === ts.SyntaxKind.AnyKeyword) {
         return basicType("any", null);
