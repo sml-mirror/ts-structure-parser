@@ -87,7 +87,7 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
                         localNodeModule = true;
                     }
                     localImport.absPathNode = localAbsPath;
-                    localImport.absPathString = localAbsPathString;
+                    localImport.absPathString = localAbsPathString.replace(/[\\/]+/g, '/');
                     localImport.isNodeModule = localNodeModule;
                 }
             });
