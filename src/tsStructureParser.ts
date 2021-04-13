@@ -256,7 +256,7 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
                     if (!x.constraint) {
                         clazz.typeParameterConstraint.push(null);
                     } else {
-                        clazz.typeParameterConstraint.push(x.constraint["typeName"]["text"]);
+                        clazz.typeParameterConstraint.push(x.constraint["typeName"] ? x.constraint["typeName"]["text"] : null);
                     }
                 });
             }
