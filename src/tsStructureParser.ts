@@ -270,7 +270,7 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
                     if (!x.constraint) {
                         clazz.typeParameterConstraint.push(null);
                     } else {
-                        clazz.typeParameterConstraint.push(x.constraint["typeName"]["text"]);
+                        clazz.typeParameterConstraint.push(x.constraint["typeName"] ? x.constraint["typeName"]["text"] : null);
                     }
                 });
             }
@@ -467,7 +467,7 @@ export function parseArg(n: ts.Expression): any {
     }
 
     if (n.kind === ts.SyntaxKind.NullKeyword) {
-        return n.getText();
+        return null;
     }
     return n.getText();
     //throw new Error("Unknown value in annotation");
@@ -510,6 +510,9 @@ export function buildType(t: ts.TypeNode, path: string): TypeModel {
     }
     if (t.kind === ts.SyntaxKind.BooleanKeyword) {
         return basicType("boolean", null);
+    }
+    if (t.kind === ts.SyntaxKind.NullKeyword) {
+        return basicType("null", null);
     }
     if (t.kind === ts.SyntaxKind.AnyKeyword) {
         return basicType("any", null);
