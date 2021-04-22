@@ -403,7 +403,7 @@ function buildDecorator(e: ts.Expression): Decorator {
     } else if (e.kind === ts.SyntaxKind.Identifier) {
       return {
         name: String((e as any).escapedText),
-        arguments: []
+        arguments: null
       };
     } else {
          throw new Error("Only call expressions may be annotations");
