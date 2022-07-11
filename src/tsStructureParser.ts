@@ -457,10 +457,27 @@ export function parseArg(n: ts.Expression): any {
 
     if (n.kind === ts.SyntaxKind.ObjectLiteralExpression) {
         const obj: ts.ObjectLiteralExpression = <ts.ObjectLiteralExpression>n;
-        let res: any = null;
+
         try {
             let jsonString = JSONTransformer.toValidateView(obj);
-            return JSON.parse(jsonString);
+            try {
+                return JSON.parse(jsonString);
+            } catch {
+                const lamdaSearchRegexp = new RegExp(/(\(\)\s{0,1}=>\s{0,1}{(.|\n)*},)|(\(\)\s{0,1}=>\s{0,1}{(.|\n)*}})/, 'gsm');
+                jsonString = jsonString.replace(lamdaSearchRegexp, (replacer) => {
+                    const replacerCorrect = replacer.replace(/"/g,"'");
+                    let func = `"${replacerCorrect.slice(0, replacer.length - 1)}"`;
+                    const lastSymb = replacerCorrect[replacer.length - 1];
+                    const replacedFunction = func.replace(/\s{2,}/g, '');
+                    return `{"type": "lamda", "content": ${replacedFunction}}${lastSymb}`;
+                });
+                try {
+                    return JSON.parse(jsonString)
+                } catch (e) {
+                    console.log(`Cant't parse string "${jsonString}" after complex object calculating`)
+                    return null;
+                }
+            }
         } catch (e) {
             throw new Error(`Can't parse string "${obj.getFullText()}" to json`);
         }
