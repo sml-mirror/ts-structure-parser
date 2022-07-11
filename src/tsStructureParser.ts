@@ -474,7 +474,7 @@ export function parseArg(n: ts.Expression): any {
                 try {
                     return JSON.parse(jsonString);
                 } catch (e) {
-                    console.log(`Cant't parse string "${jsonString}" after complex object calculating`);
+                    console.error(`Cant't parse string "${jsonString}" after complex object calculating`);
                     return null;
                 }
             }
