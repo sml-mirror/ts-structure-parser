@@ -463,18 +463,18 @@ export function parseArg(n: ts.Expression): any {
             try {
                 return JSON.parse(jsonString);
             } catch {
-                const lamdaSearchRegexp = new RegExp(/(\(\)\s{0,1}=>\s{0,1}{(.|\n)*},)|(\(\)\s{0,1}=>\s{0,1}{(.|\n)*}})/, 'gsm');
+                const lamdaSearchRegexp = new RegExp(/(\(\)\s{0,1}=>\s{0,1}{(.|\n)*},)|(\(\)\s{0,1}=>\s{0,1}{(.|\n)*}})/, "gsm");
                 jsonString = jsonString.replace(lamdaSearchRegexp, (replacer) => {
-                    const replacerCorrect = replacer.replace(/"/g,"'");
+                    const replacerCorrect = replacer.replace(/"/g, `'`);
                     let func = `"${replacerCorrect.slice(0, replacer.length - 1)}"`;
                     const lastSymb = replacerCorrect[replacer.length - 1];
-                    const replacedFunction = func.replace(/\s{2,}/g, '');
+                    const replacedFunction = func.replace(/\s{2,}/g, "");
                     return `{"type": "lamda", "content": ${replacedFunction}}${lastSymb}`;
                 });
                 try {
-                    return JSON.parse(jsonString)
+                    return JSON.parse(jsonString);
                 } catch (e) {
-                    console.log(`Cant't parse string "${jsonString}" after complex object calculating`)
+                    console.log(`Cant't parse string "${jsonString}" after complex object calculating`);
                     return null;
                 }
             }
