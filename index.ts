@@ -62,13 +62,10 @@ export enum TypeKind {
     UNION
 }
 
-export interface TypeModel {
-    typeKind: TypeKind;
+export type TypeModel = BasicType | ArrayType | UnionType;
 
-}
-
-export interface BasicType extends TypeModel {
-    //typeName:string
+export interface BasicType {
+    typeKind: TypeKind.BASIC;
     nameSpace: string;
     basicName: string;
     typeName: string;
@@ -76,13 +73,15 @@ export interface BasicType extends TypeModel {
     modulePath: string;
 }
 
-export interface ArrayType extends TypeModel {
+export interface ArrayType {
+    typeKind: TypeKind.ARRAY;
     base: TypeModel;
 }
 
-export type Arg = string|number|boolean;
+export type Arg = string | number | boolean;
 
-export interface UnionType extends TypeModel {
+export interface UnionType {
+    typeKind: TypeKind.UNION;
     options: TypeModel[];
 }
 
