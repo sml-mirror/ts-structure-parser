@@ -1,47 +1,31 @@
-/**
- * Created by kor on 08/05/15.
- */
-
-import ts = require("typescript");
-import JSON5 = require("JSON5");
-export import tsm = require("./tsASTMatchers");
-export import helperMethodExtractor = require("./helperMethodExtractor");
-import fsUtil = require("./fsUtils");
-import {TypeModel} from "../index";
-import {TypeKind} from "../index";
-import {ArrayType} from "../index";
-import {Annotation} from "../index";
-import {Decorator} from "../index";
-import {Constraint} from "../index";
-import {FieldModel} from "../index";
-import {Module, FunctionDeclaration} from "../index";
-import {MethodModel} from "../index";
-import {ParameterModel} from "../index";
-import {UnionType} from "../index";
-import {BasicType} from "../index";
-import {classDecl} from "../index";
-import {EnumMemberDeclaration} from "./../index";
-import { JSONTransformer } from "./jsonTransformer";
-
-function parse(content: string) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const ts = require("typescript");
+const JSON5 = require("JSON5");
+exports.tsm = require("./tsASTMatchers");
+exports.helperMethodExtractor = require("./helperMethodExtractor");
+const fsUtil = require("./fsUtils");
+const index_1 = require("../index");
+const index_2 = require("../index");
+const jsonTransformer_1 = require("./jsonTransformer");
+function parse(content) {
     return ts.createSourceFile("sample.ts", content, ts.ScriptTarget.ES3, true);
 }
-var fld = tsm.Matching.field();
-
-export function parseStruct(content: string, modules: {[path: string]: Module}, mpth: string): Module {
+var fld = exports.tsm.Matching.field();
+function parseStruct(content, modules, mpth) {
     var mod = parse(content);
-    var module: Module = {functions: [], classes: [], aliases: [], enumDeclarations: [], imports: {}, _imports: [], name: mpth};
+    var module = { functions: [], classes: [], aliases: [], enumDeclarations: [], imports: {}, _imports: [], name: mpth };
     modules[mpth] = module;
-    var currentModule: string = null;
-    tsm.Matching.visit(mod, x => {
+    var currentModule = null;
+    exports.tsm.Matching.visit(mod, x => {
         if (x.kind === ts.SyntaxKind.VariableDeclaration) {
             x.forEachChild(c => {
                 if (c.kind === ts.SyntaxKind.FunctionExpression) {
-                    const isExport = !!((x.parent.parent.modifiers || []) as any[]).find(mod => mod.kind === ts.SyntaxKind.ExportKeyword);
+                    const isExport = !!(x.parent.parent.modifiers || []).find(mod => mod.kind === ts.SyntaxKind.ExportKeyword);
                     const params = [];
-                    let isAsync = !!(c.modifiers || [] as any).find(m => m.kind === ts.SyntaxKind.AsyncKeyword);
-                    const name = (x as ts.FunctionDeclaration).name.escapedText as string;
-                    (c as any).parameters.forEach(param => {
+                    let isAsync = !!(c.modifiers || []).find(m => m.kind === ts.SyntaxKind.AsyncKeyword);
+                    const name = x.name.escapedText;
+                    c.parameters.forEach(param => {
                         params.push({
                             name: param.name.getText(),
                             type: (param.type && param.type.getText()) || "any",
@@ -58,31 +42,32 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
                 }
             });
         }
-        if ( x.kind === ts.SyntaxKind.ImportDeclaration ) {
-            var impDec = <ts.ImportDeclaration>x;
+        if (x.kind === ts.SyntaxKind.ImportDeclaration) {
+            var impDec = x;
             var localMod = parse(x.getText());
-            var localImport = { clauses: [] , absPathNode: [], absPathString: "", isNodeModule: false};
-            var localNamedImports: string[];
-            var localAbsPath: string[];
-            var localAbsPathString: string;
-            var localNodeModule: boolean = false;
+            var localImport = { clauses: [], absPathNode: [], absPathString: "", isNodeModule: false };
+            var localNamedImports;
+            var localAbsPath;
+            var localAbsPathString;
+            var localNodeModule = false;
             var pth = require("path");
-            tsm.Matching.visit(localMod, y => {
+            exports.tsm.Matching.visit(localMod, y => {
                 var _import = {};
-                if (y.kind === ts.SyntaxKind.NamedImports ) {
+                if (y.kind === ts.SyntaxKind.NamedImports) {
                     var lit = impDec.importClause.getText();
-                    localNamedImports = lit.substring( 1, lit.length - 1).split(",");
-                    localImport.clauses = localNamedImports.map( im => {
+                    localNamedImports = lit.substring(1, lit.length - 1).split(",");
+                    localImport.clauses = localNamedImports.map(im => {
                         return im.trim();
-                    } );
+                    });
                 }
                 if (y.kind === ts.SyntaxKind.StringLiteral) {
-                    var localPath = y.getText().substring( 1, y.getText().length - 1);
-                    if ( localPath[0] === "." ) {
-                        var localP = fsUtil.resolve( fsUtil.dirname( mpth) + "/", localPath).split( process.cwd()).join(".");
+                    var localPath = y.getText().substring(1, y.getText().length - 1);
+                    if (localPath[0] === ".") {
+                        var localP = fsUtil.resolve(fsUtil.dirname(mpth) + "/", localPath).split(process.cwd()).join(".");
                         localAbsPath = localP.split(pth.sep);
                         localAbsPathString = localP;
-                    } else {
+                    }
+                    else {
                         localAbsPath = localPath.split(pth.sep);
                         localAbsPathString = localPath;
                         localNodeModule = true;
@@ -94,21 +79,19 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
             });
             module._imports.push(localImport);
         }
-        if (x.kind === ts.SyntaxKind.FunctionDeclaration || x.kind ===  ts.SyntaxKind.ArrowFunction) {
+        if (x.kind === ts.SyntaxKind.FunctionDeclaration || x.kind === ts.SyntaxKind.ArrowFunction) {
             const isArrow = x.kind === ts.SyntaxKind.ArrowFunction;
-
-            const functionDeclaration = isArrow ? x as ts.ArrowFunction : x as ts.FunctionDeclaration;
-            const parentVariable = functionDeclaration.parent as ts.VariableDeclaration;
+            const functionDeclaration = isArrow ? x : x;
+            const parentVariable = functionDeclaration.parent;
             const name = isArrow
-                ?  parentVariable.name && parentVariable.name.getText()
-                :  functionDeclaration.name.text;
-
+                ? parentVariable.name && parentVariable.name.getText()
+                : functionDeclaration.name.text;
             let isAsync = false;
             let isExport = false;
-            let params: {name: string, type: string, mandatory: boolean}[] = [];
+            let params = [];
             if (name) {
                 let modifierContainer = isArrow
-                    ? (functionDeclaration.parent as ts.VariableDeclaration).initializer
+                    ? functionDeclaration.parent.initializer
                     : functionDeclaration;
                 if (modifierContainer && modifierContainer.modifiers) {
                     modifierContainer.modifiers.forEach(modi => {
@@ -120,28 +103,24 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
                         }
                     });
                 }
-
                 if (isArrow && !isExport) {
-                  do {
-                    modifierContainer = modifierContainer.parent as ts.Expression;
-                  } while (modifierContainer && modifierContainer.kind !== ts.SyntaxKind.VariableStatement);
-
-                  if (modifierContainer && modifierContainer.modifiers) {
-                    modifierContainer.modifiers.forEach(modi => {
-                        if (modi.kind === ts.SyntaxKind.ExportKeyword) {
-                            isExport = true;
-                        }
-                    });
-                  }
+                    do {
+                        modifierContainer = modifierContainer.parent;
+                    } while (modifierContainer && modifierContainer.kind !== ts.SyntaxKind.VariableStatement);
+                    if (modifierContainer && modifierContainer.modifiers) {
+                        modifierContainer.modifiers.forEach(modi => {
+                            if (modi.kind === ts.SyntaxKind.ExportKeyword) {
+                                isExport = true;
+                            }
+                        });
+                    }
                 }
-
                 functionDeclaration.parameters.forEach(param => {
                     params.push({
                         name: param.name.getText(),
                         type: (param.type && param.type.getText()) || "any",
                         mandatory: !param.questionToken
                     });
-
                 });
                 module.functions.push({
                     isArrow,
@@ -152,22 +131,18 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
                 });
             }
         }
-
-
         if (x.kind === ts.SyntaxKind.ModuleDeclaration) {
-            var cmod = <ts.ModuleDeclaration>x;
+            var cmod = x;
             currentModule = cmod.name.text;
         }
-        if ( x.kind === ts.SyntaxKind.ImportEqualsDeclaration) {
-            var imp = <ts.ImportEqualsDeclaration>x;
+        if (x.kind === ts.SyntaxKind.ImportEqualsDeclaration) {
+            var imp = x;
             var namespace = imp.name.text;
             if (namespace === "RamlWrapper") {
                 return;
             }
-
-            var path = <ts.ExternalModuleReference>imp.moduleReference;
-
-            var literal = <ts.StringLiteral>path.expression;
+            var path = imp.moduleReference;
+            var literal = path.expression;
             var importPath = literal.text;
             var absPath = fsUtil.resolve(fsUtil.dirname(mpth) + "/", importPath) + ".ts";
             if (!fsUtil.existsSync(absPath)) {
@@ -180,89 +155,82 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
             module.imports[namespace] = modules[absPath];
         }
         if (x.kind === ts.SyntaxKind.TypeAliasDeclaration) {
-            var u = <ts.TypeAliasDeclaration>x;
+            var u = x;
             if (u.name) {
                 var aliasName = u.name.text;
                 var type = buildType(u.type, mpth);
-                module.aliases.push({name: aliasName, type: type});
+                module.aliases.push({ name: aliasName, type: type });
             }
-
-            //return;
         }
-
         if (x.kind === ts.SyntaxKind.EnumDeclaration) {
-            var e = <ts.EnumDeclaration>x;
-            var members: EnumMemberDeclaration[] = [];
+            var e = x;
+            var members = [];
             if (e.members) {
                 e.members.forEach(member => {
-                    let value: number | string | undefined;
+                    let value;
                     if (member.initializer) {
-                      if (member.initializer.kind === ts.SyntaxKind.NumericLiteral) {
-                        value = parseInt((member.initializer as any).text);
-                      }
-                      if (
-                        member.initializer.kind === ts.SyntaxKind.StringLiteral ||
-                        member.initializer.kind === ts.SyntaxKind.JsxText
-                      ) {
-                        value = String((member.initializer as any).text);
-                      }
+                        if (member.initializer.kind === ts.SyntaxKind.NumericLiteral) {
+                            value = parseInt(member.initializer.text);
+                        }
+                        if (member.initializer.kind === ts.SyntaxKind.StringLiteral ||
+                            member.initializer.kind === ts.SyntaxKind.JsxText) {
+                            value = String(member.initializer.text);
+                        }
                     }
                     members.push({
-                      name: String((member.name as any).text),
-                      value,
+                        name: String(member.name.text),
+                        value,
                     });
                 });
             }
             if (e.name) {
-                module.enumDeclarations.push({name: e.name.text, members: members});
+                module.enumDeclarations.push({ name: e.name.text, members: members });
             }
         }
-
         var isInterface = x.kind === ts.SyntaxKind.InterfaceDeclaration;
         var isClass = x.kind === ts.SyntaxKind.ClassDeclaration;
         if (!isInterface && !isClass) {
             return;
         }
-        var c: ts.ClassDeclaration = <ts.ClassDeclaration>x;
+        var c = x;
         if (c) {
-            var fields: {[n: string]: FieldModel} = {};
-            var clazz = classDecl(c.name.text, isInterface);
-
+            var fields = {};
+            var clazz = index_2.classDecl(c.name.text, isInterface);
             if (c.decorators && c.decorators.length) {
-                clazz.decorators = c.decorators.map( (el: ts.Decorator) => buildDecorator(el.expression) );
+                clazz.decorators = c.decorators.map((el) => buildDecorator(el.expression));
             }
-
             clazz.moduleName = currentModule;
             module.classes.push(clazz);
             c.members.forEach(x => {
                 if (x.kind === ts.SyntaxKind.MethodDeclaration) {
-                    var md = <ts.MethodDeclaration>x;
+                    var md = x;
                     var method = buildMethod(md, content, mpth);
                     clazz.methods.push(method);
-                    //return;
                 }
-                var field: ts.PropertyDeclaration = fld.doMatch(x);
+                var field = fld.doMatch(x);
                 if (field) {
                     var f = buildField(field, mpth);
                     if (f.name === "$") {
                         clazz.annotations = f.annotations;
-                    } else {
+                    }
+                    else {
                         if (f.name.charAt(0) !== "$" || f.name === "$ref") {
                             fields[f.name] = f;
                             clazz.fields.push(f);
-                        } else {
+                        }
+                        else {
                             var targetField = f.name.substr(1);
                             var of = fields[targetField];
                             if (!of) {
                                 if (f.name !== "$$") {
-                                    //console.log('Overriding annotations for field:'+targetField);
                                     var overridings = clazz.annotationOverridings[targetField];
                                     if (!overridings) {
                                         overridings = [];
                                     }
                                     clazz.annotationOverridings[targetField] = overridings.concat(f.annotations);
                                 }
-                            } else {
+                            }
+                            else {
                                 of.annotations = f.annotations;
                             }
                         }
@@ -274,7 +242,8 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
                     clazz.typeParameters.push(x.name["text"]);
                     if (!x.constraint) {
                         clazz.typeParameterConstraint.push(null);
-                    } else {
+                    }
+                    else {
                         clazz.typeParameterConstraint.push(x.constraint["typeName"] ? x.constraint["typeName"]["text"] : null);
                     }
                 });
@@ -284,36 +253,38 @@ export function parseStruct(content: string, modules: {[path: string]: Module}, 
                     x.types.forEach(y => {
                         if (x.token === ts.SyntaxKind.ExtendsKeyword) {
                             clazz.extends.push(buildType(y, mpth));
-                        } else {
+                        }
+                        else {
                             if (x.token === ts.SyntaxKind.ImplementsKeyword) {
                                 clazz.implements.push(buildType(y, mpth));
-                            } else {
+                            }
+                            else {
                                 throw new Error("Unknown token class heritage");
                             }
                         }
                     });
                 });
             }
-            return tsm.Matching.SKIP;
+            return exports.tsm.Matching.SKIP;
         }
     });
     return module;
 }
-function buildField(f: ts.PropertyDeclaration, path: string): FieldModel {
+exports.parseStruct = parseStruct;
+function buildField(f, path) {
     return {
         name: f.name["text"],
         type: buildType(f.type, path),
         annotations: f.name["text"].charAt(0) === "$" ? buildInitializer(f.initializer) : [],
         valueConstraint: f.name["text"].charAt(0) !== "$" ? buildConstraint(f.initializer) : null,
         optional: f.questionToken != null,
-        decorators: (f.decorators && f.decorators.length) ? f.decorators.map((el: ts.Decorator) => buildDecorator(el.expression)) : [],
+        decorators: (f.decorators && f.decorators.length) ? f.decorators.map((el) => buildDecorator(el.expression)) : [],
     };
 }
-
-function buildMethod(md: ts.MethodDeclaration, content: any, path: string): MethodModel {
-    var aliasName = (<ts.Identifier>md.name).text;
+function buildMethod(md, content, path) {
+    var aliasName = md.name.text;
     var text = content.substring(md.pos, md.end);
-    var params: ParameterModel[] = [];
+    var params = [];
     md.parameters.forEach(x => {
         params.push(buildParameter(x, content, path));
     });
@@ -327,20 +298,17 @@ function buildMethod(md: ts.MethodDeclaration, content: any, path: string): Meth
     };
     return method;
 }
-
-function buildParameter(f: ts.ParameterDeclaration, content: any, path: string): ParameterModel {
-
+function buildParameter(f, content, path) {
     var text = content.substring(f.pos, f.end);
     return {
         name: f.name["text"],
         start: f.pos,
         end: f.end,
         text: text,
-        type: buildType(<ts.TypeNode>f.type, path)
+        type: buildType(f.type, path)
     };
 }
-
-function buildConstraint(e: ts.Expression): Constraint {
+function buildConstraint(e) {
     if (!e) {
         return null;
     }
@@ -349,32 +317,33 @@ function buildConstraint(e: ts.Expression): Constraint {
             isCallConstraint: true,
             value: buildAnnotation(e)
         };
-    } else {
+    }
+    else {
         return {
             isCallConstraint: false,
             value: parseArg(e)
         };
     }
-
 }
-function buildInitializer(i: ts.Expression): Annotation[] {
+function buildInitializer(i) {
     if (!i) {
         return [];
     }
     if (i.kind === ts.SyntaxKind.ArrayLiteralExpression) {
-        var arr = <ts.ArrayLiteralExpression>i;
+        var arr = i;
         var annotations = [];
         arr.elements.forEach(x => {
             annotations.push(buildAnnotation(x));
         });
         return annotations;
-    } else {
+    }
+    else {
         throw new Error("Only Array Literals supported now");
     }
 }
-function buildAnnotation(e: ts.Expression): Annotation {
+function buildAnnotation(e) {
     if (e.kind === ts.SyntaxKind.CallExpression) {
-        var call: ts.CallExpression = <ts.CallExpression>e;
+        var call = e;
         var name = parseName(call.expression);
         var a = {
             name: name,
@@ -384,14 +353,14 @@ function buildAnnotation(e: ts.Expression): Annotation {
             a.arguments.push(parseArg(x));
         });
         return a;
-    } else {
-         throw new Error("Only call expressions may be annotations");
+    }
+    else {
+        throw new Error("Only call expressions may be annotations");
     }
 }
-
-function buildDecorator(e: ts.Expression): Decorator {
+function buildDecorator(e) {
     if (e.kind === ts.SyntaxKind.CallExpression) {
-        var call: ts.CallExpression = <ts.CallExpression>e;
+        var call = e;
         var name = parseName(call.expression);
         var a = {
             name: name,
@@ -401,28 +370,28 @@ function buildDecorator(e: ts.Expression): Decorator {
             a.arguments.push(parseArg(x));
         });
         return a;
-    } else if (e.kind === ts.SyntaxKind.Identifier) {
-      return {
-        name: String((e as any).escapedText),
-        arguments: null
-      };
-    } else {
-         throw new Error("Only call expressions may be annotations");
+    }
+    else if (e.kind === ts.SyntaxKind.Identifier) {
+        return {
+            name: String(e.escapedText),
+            arguments: null
+        };
+    }
+    else {
+        throw new Error("Only call expressions may be annotations");
     }
 }
-export function parseArg(n: ts.Expression): any {
+function parseArg(n) {
     if (n.kind === ts.SyntaxKind.StringLiteral) {
-        var l: ts.StringLiteral = <ts.StringLiteral>n;
-
+        var l = n;
         return l.text;
     }
     if (n.kind === ts.SyntaxKind.NoSubstitutionTemplateLiteral) {
-        var ls: ts.LiteralExpression = <ts.LiteralExpression>n;
-
+        var ls = n;
         return ls.text;
     }
     if (n.kind === ts.SyntaxKind.ArrayLiteralExpression) {
-        var arr = <ts.ArrayLiteralExpression>n;
+        var arr = n;
         var annotations = [];
         arr.elements.forEach(x => {
             annotations.push(parseArg(x));
@@ -433,37 +402,34 @@ export function parseArg(n: ts.Expression): any {
         return true;
     }
     if (n.kind === ts.SyntaxKind.PropertyAccessExpression) {
-        var pa = <ts.PropertyAccessExpression>n;
+        var pa = n;
         return parseArg(pa.expression) + "." + parseArg(pa.name);
     }
     if (n.kind === ts.SyntaxKind.Identifier) {
-        var ident = <ts.Identifier>n;
+        var ident = n;
         return ident.text;
     }
     if (n.kind === ts.SyntaxKind.FalseKeyword) {
         return false;
     }
     if (n.kind === ts.SyntaxKind.NumericLiteral) {
-        var nl: ts.LiteralExpression = <ts.LiteralExpression>n;
-
-
+        var nl = n;
         return Number(nl.text);
     }
     if (n.kind === ts.SyntaxKind.BinaryExpression) {
-        var bin: ts.BinaryExpression = <ts.BinaryExpression>n;
+        var bin = n;
         if (bin.operatorToken.kind = ts.SyntaxKind.PlusToken) {
             return parseArg(bin.left) + parseArg(bin.right);
         }
     }
-
     if (n.kind === ts.SyntaxKind.ObjectLiteralExpression) {
-        const obj: ts.ObjectLiteralExpression = <ts.ObjectLiteralExpression>n;
-
+        const obj = n;
         try {
-            let jsonString = JSONTransformer.toValidateView(obj);
+            let jsonString = jsonTransformer_1.JSONTransformer.toValidateView(obj);
             try {
                 return JSON5.parse(jsonString);
-            } catch {
+            }
+            catch (_a) {
                 const lamdaSearchRegexp = new RegExp(/(\(\)\s{0,1}=>\s{0,1}{(.|\n)*},)|(\(\)\s{0,1}=>\s{0,1}{(.|\n)*}})/, "gsm");
                 jsonString = jsonString.replace(lamdaSearchRegexp, (replacer) => {
                     const replacerCorrect = replacer.replace(/"/g, `'`);
@@ -474,53 +440,49 @@ export function parseArg(n: ts.Expression): any {
                 });
                 try {
                     return JSON5.parse(jsonString);
-                } catch (e) {
+                }
+                catch (e) {
                     console.error(`Cant't parse string "${jsonString}" after complex object calculating`);
                     return null;
                 }
             }
-        } catch (e) {
+        }
+        catch (e) {
             throw new Error(`Can't parse string "${obj.getFullText()}" to json`);
         }
     }
     if (n.kind === ts.SyntaxKind.ArrowFunction) {
-        //mock for arrow function
-        return (<ts.ArrowFunction>n).getText();
+        return n.getText();
     }
-
     if (n.kind === ts.SyntaxKind.NullKeyword) {
         return null;
     }
     return n.getText();
-    //throw new Error("Unknown value in annotation");
 }
-
-function parseName(n: ts.Expression): string {
+exports.parseArg = parseArg;
+function parseName(n) {
     if (n.kind === ts.SyntaxKind.Identifier) {
         return n["text"];
     }
     if (n.kind === ts.SyntaxKind.PropertyAccessExpression) {
-        var m: ts.PropertyAccessExpression = <ts.PropertyAccessExpression>n;
+        var m = n;
         return parseName(m.expression) + "." + parseName(m.name);
     }
     throw new Error("Only simple identifiers are supported now");
 }
-
-
-function basicType(n: string, path: string): BasicType {
+function basicType(n, path) {
     var namespaceIndex = n.indexOf(".");
     var namespace = namespaceIndex !== -1 ? n.substring(0, namespaceIndex) : "";
     var basicName = namespaceIndex !== -1 ? n.substring(namespaceIndex + 1) : n;
-
-    return {typeName: n, nameSpace: namespace, basicName: basicName, typeKind: TypeKind.BASIC, typeArguments: [], modulePath: path };
+    return { typeName: n, nameSpace: namespace, basicName: basicName, typeKind: index_1.TypeKind.BASIC, typeArguments: [], modulePath: path };
 }
-function arrayType(b: TypeModel): ArrayType {
-    return {base: b, typeKind: TypeKind.ARRAY };
+function arrayType(b) {
+    return { base: b, typeKind: index_1.TypeKind.ARRAY };
 }
-function unionType(b: TypeModel[]): UnionType {
-    return {options: b, typeKind: TypeKind.UNION};
+function unionType(b) {
+    return { options: b, typeKind: index_1.TypeKind.UNION };
 }
-export function buildType(t: ts.TypeNode, path: string): TypeModel {
+function buildType(t, path) {
     if (!t) {
         return null;
     }
@@ -542,9 +504,8 @@ export function buildType(t: ts.TypeNode, path: string): TypeModel {
     if (t.kind === ts.SyntaxKind.VoidKeyword) {
         return basicType("void", null);
     }
-
     if (t.kind === ts.SyntaxKind.TypeReference) {
-        var tr: ts.TypeReferenceNode = <ts.TypeReferenceNode>t;
+        var tr = t;
         var res = basicType(parseQualified(tr.typeName), path);
         if (tr.typeArguments) {
             tr.typeArguments.forEach(x => {
@@ -554,15 +515,15 @@ export function buildType(t: ts.TypeNode, path: string): TypeModel {
         return res;
     }
     if (t.kind === ts.SyntaxKind.ArrayType) {
-        var q: ts.ArrayTypeNode = <ts.ArrayTypeNode>t;
+        var q = t;
         return arrayType(buildType(q.elementType, path));
     }
     if (t.kind === ts.SyntaxKind.UnionType) {
-        var ut: ts.UnionTypeNode = <ts.UnionTypeNode>t;
+        var ut = t;
         return unionType(ut.types.map(x => buildType(x, path)));
     }
     if (t.kind === ts.SyntaxKind.ExpressionWithTypeArguments) {
-        var tra = <ts.ExpressionWithTypeArguments>t;
+        var tra = t;
         res = basicType(parseQualified2(tra.expression), path);
         if (tra.typeArguments) {
             tra.typeArguments.forEach(x => {
@@ -570,22 +531,25 @@ export function buildType(t: ts.TypeNode, path: string): TypeModel {
             });
         }
         return res;
-    } else {
+    }
+    else {
         return basicType("mock", null);
     }
-    //throw new Error("Case not supported: " + t.kind);
 }
-function parseQualified2(n: any): string {
+exports.buildType = buildType;
+function parseQualified2(n) {
     if (!n.name) {
         return n.text;
     }
-   return n.name.text;
+    return n.name.text;
 }
-function parseQualified(n: ts.EntityName): string {
+function parseQualified(n) {
     if (n.kind === ts.SyntaxKind.Identifier) {
         return n["text"];
-    } else {
-        var q = <ts.QualifiedName>n;
+    }
+    else {
+        var q = n;
         return parseQualified(q.left) + "." + parseQualified(q.right);
     }
 }
+//# sourceMappingURL=tsStructureParser.js.map
