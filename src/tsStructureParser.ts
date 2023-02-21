@@ -3,6 +3,7 @@
  */
 
 import ts = require("typescript");
+import JSON5 = require("JSON5");
 export import tsm = require("./tsASTMatchers");
 export import helperMethodExtractor = require("./helperMethodExtractor");
 import fsUtil = require("./fsUtils");
@@ -461,7 +462,7 @@ export function parseArg(n: ts.Expression): any {
         try {
             let jsonString = JSONTransformer.toValidateView(obj);
             try {
-                return JSON.parse(jsonString);
+                return JSON5.parse(jsonString);
             } catch {
                 const lamdaSearchRegexp = new RegExp(/(\(\)\s{0,1}=>\s{0,1}{(.|\n)*},)|(\(\)\s{0,1}=>\s{0,1}{(.|\n)*}})/, "gsm");
                 jsonString = jsonString.replace(lamdaSearchRegexp, (replacer) => {
@@ -472,7 +473,7 @@ export function parseArg(n: ts.Expression): any {
                     return `{"type": "lamda", "content": ${replacedFunction}}${lastSymb}`;
                 });
                 try {
-                    return JSON.parse(jsonString);
+                    return JSON5.parse(jsonString);
                 } catch (e) {
                     console.error(`Cant't parse string "${jsonString}" after complex object calculating`);
                     return null;

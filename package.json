@@ -9,7 +9,8 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "typescript": "2.7.2"
+    "typescript": "2.7.2",
+    "json5": "2.2.3"
   },
   "devDependencies": {
     "@types/chai": "4.1.2",
